@@ -1,7 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 
-const mongoPractice = require('./mongo');
+// const mongoPractice = require('./mongo');
+const mongoPractice = require('./mongoose');
 
 
 const app = express();
@@ -14,6 +15,10 @@ app.get('/products', mongoPractice.getProducts);
 
 app.listen(3000);
 
+
+
 //installed:
 
     //npm install mongodb --save
+        //mongodb driver
+    //npm install mongoose --save
