@@ -43,7 +43,7 @@ export default function Auth() {
             }, false);
         }
         setIsLoginMode(prevMode => !prevMode);
-        console.log(isLoginMode);
+        
     };
 
     async function loginHandler(event) {
