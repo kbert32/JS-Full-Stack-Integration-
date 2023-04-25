@@ -1,8 +1,11 @@
 const MongoClient = require('mongodb').MongoClient;
 // const { MongoClient } = require("mongodb");
 
-const password = 'ledzep';
-const url = `mongodb+srv://kbert32:${password}@cluster0.ow2ya0v.mongodb.net/products_test?retryWrites=true&w=majority`;
+const user = '***';
+const password = '***';
+const db = '***';
+
+const url = `mongodb+srv://${user}:${password}@cluster0.ow2ya0v.mongodb.net/${db}?retryWrites=true&w=majority`;
              
 const createProduct = async (req, res, next) => {
 
