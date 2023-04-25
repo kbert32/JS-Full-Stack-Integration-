@@ -2,9 +2,11 @@ const mongoose = require('mongoose');
 
 const Product = require('./models/product');
 
-const password = 'ledzep';
+const user = '***';
+const password = '***';
+const db = '***';
 
-mongoose.connect(`mongodb+srv://kbert32:${password}@cluster0.ow2ya0v.mongodb.net/products_test?retryWrites=true&w=majority`)
+mongoose.connect(`mongodb+srv://${user}:${password}@cluster0.ow2ya0v.mongodb.net/${db}?retryWrites=true&w=majority`)
     .then(() => {
         console.log('Connected to database!')
     }).catch(() => {
