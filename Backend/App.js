@@ -1,9 +1,16 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 
 const placesRoutes = require('./routes/places-routes');
 const usersRoutes = require('./routes/users-routes');
 const HttpError = require('./models/http-error');
+
+const user = '***';
+const password = '***';
+const db = '***';
+
+const url = `mongodb+srv://${user}:${password}@cluster0.ow2ya0v.mongodb.net/${db}?retryWrites=true&w=majority`
 
 const app = express();
 
@@ -26,7 +33,14 @@ app.use((error, req, res, next) => {        //a middleware function provided wit
     res.json({message: error.message || 'An unknown error occurred!'}); //we should send an error message along with any errors
 });                                         
 
-app.listen(5000);
+mongoose
+    .connect(url)
+    .then(() => {
+        app.listen(5000);
+    })
+    .catch(err => {
+        console.log(err);
+    });
 
 
 
@@ -44,3 +58,7 @@ app.listen(5000);
         //-third party validation library
     //npm install --save axios
         //-assists with sending requests to Google's geoCoding API
+    //npm install --save mongoose
+        //-assists with accessing Mongodb
+    //npm install --save mongoose-unique-validator
+        //helps us ensure that an email is unique
