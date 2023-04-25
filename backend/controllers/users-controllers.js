@@ -22,9 +22,10 @@ async function getUsers(req, res, next) {
 };
 
 async function createUser(req, res, next) {
-
+    
     const errors = validationResult(req);    //comes from express-validator library;  'errors' object contains useful properties not used here
     if (!errors.isEmpty()) {
+        console.log(errors);
         return next (new HttpError('Invalid inputs, please check your data.', 422));    //code 422 typically used for invalid user input
     }
 
