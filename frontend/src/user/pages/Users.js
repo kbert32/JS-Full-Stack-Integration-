@@ -3,42 +3,28 @@ import { useEffect, useState } from "react";
 import UsersList from "../components/UsersList";
 import ErrorModal from "../../shared/components/UIElements/ErrorModal";
 import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
+import { useHttpClient } from "../../shared/hooks/http-hook";
 
 export default function Users() {
 
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState();
     const [loadedUsers, setLoadedUsers] = useState();
+    const {isLoading, error, sendRequest, clearError} = useHttpClient();
 
     useEffect(() => {
-        async function sendRequest() {
-            setIsLoading(true);
+        async function fetchUsers() {
             try {
-                const response = await fetch('http://localhost:5000/api/users');
-                const responseData = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(responseData.message);
-                }
-
-                setLoadedUsers(responseData.users);
+                const responseData = await sendRequest('http://localhost:5000/api/users');
                 
-            } catch (err) {
-                setError(err.message);
-            }
-            setIsLoading(false);
+                setLoadedUsers(responseData.users);
+            } catch (err) {}
         };
 
-        sendRequest();
-    }, []);
-
-    function errorHandler() {
-        setError(null);
-    };
+        fetchUsers();
+    }, [sendRequest]);  //important to have 'useCallback' on our sendRequest function within the custom hook to avoid an infinite loop
     
     return (
         <>
-            <ErrorModal error={error} onClear={errorHandler} />
+            <ErrorModal error={error} onClear={clearError} />
             {isLoading && <div className='center'><LoadingSpinner asOverlay /></div>}
             {!isLoading && loadedUsers && <UsersList items={loadedUsers} />}
         </>
