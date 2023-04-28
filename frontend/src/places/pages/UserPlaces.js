@@ -8,7 +8,7 @@ import { useHttpClient } from "../../shared/hooks/http-hook";
 
 export default function UserPlaces() {
     const [loadedPlaces, setLoadedPlaces] = useState();
-    const {isLoading, error, sendRequest, clearError} = useHttpClient();
+    const {isLoading, error, sendRequest, clearErrorAndMove} = useHttpClient();
 
     const userId = useParams().userId;
 
@@ -22,11 +22,19 @@ export default function UserPlaces() {
         fetchPlaces();
     }, [sendRequest, userId]);
 
+    function placeDeletedHandler(deletedId) {
+        setLoadedPlaces(prev => prev.filter(place => place.id !== deletedId));
+    };
+
+    function clearErrorHandler() {
+        clearErrorAndMove('/');
+    };
+
     return (
         <>
-            <ErrorModal error={error} onClear={clearError} />
+            <ErrorModal error={error} onClear={clearErrorHandler} />
             {isLoading && <div className='center'><LoadingSpinner asOverlay /></div> }
-            {!isLoading && loadedPlaces && <PlaceList items={loadedPlaces} />}
+            {!isLoading && loadedPlaces && <PlaceList items={loadedPlaces} deleteUpdate={placeDeletedHandler} />}
         </>
     );
 };

@@ -1,6 +1,10 @@
 import { useState, useCallback, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export function useHttpClient() {
+
+    const navigate = useNavigate();
+
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState();
 
@@ -42,11 +46,16 @@ export function useHttpClient() {
         setError(null);
     };
 
+    function clearErrorAndMove(path) {
+        setError(null);
+        navigate(path);
+    };
+
     useEffect(() => {       //useEffect is used here to utilize the cleanup function;  the cleanup function will abort all requests, when the component  
         return () => {      //that called our custom hook, unmounts.
             activeHttpRequests.current.forEach(abortCtrl => abortCtrl.abort());
         };
     }, []);
 
-    return {isLoading, error, sendRequest, clearError};
+    return {isLoading, error, sendRequest, clearError, clearErrorAndMove};
 };

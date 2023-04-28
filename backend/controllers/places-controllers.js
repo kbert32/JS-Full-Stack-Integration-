@@ -1,4 +1,6 @@
-const uuid = require('uuid');                                                       //there are different versions for uuid, using version 4
+const fs = require('fs');
+
+const uuid = require('uuid');                                    //there are different versions for uuid, using version 4
 const {validationResult} = require('express-validator');
 const mongoose = require('mongoose');
 
@@ -67,7 +69,7 @@ async function createPlace(req, res, next) {
         description: description,
         address: address,
         location: coordinates,
-        image: 'http://1.bp.blogspot.com/-pN0GUG3hlN8/VNyLIOTmQ9I/AAAAAAAAAlI/tSglmb3SIms/s1600/Most%2BBeautiful%2BPlaces%2Bin%2BThe%2BWorld%2B3.jpg',
+        image: req.file.path,
         creator: creator
     });
 
@@ -111,31 +113,34 @@ async function updatePlace(req, res, next) {
     const {title, description} = req.body;
     const placeId = req.params.pid;
 
-    let place;
-
-    try {
-        place = await Place.findByIdAndUpdate(placeId, {title: title, description: description}, {returnDocument: 'after'});    //using 'findByIdAndUpdate' seems easier than Manu's commented code below; d 
-    } catch (err) {                                                                                                             //'returnDocument: after' option is needed so updated place can be returned in the response
-        return next(new HttpError('Something went wrong.  Could not update place.', 500));
-    }
-
     // let place;
     // try {
-    //     place = await Place.findById(placeId);
-    // } catch (err) {
-    //     const error = new HttpError('Something went wrong.  Could not update place.', 500);
-    //     return next(error);
+    //     place = await Place.findByIdAndUpdate(placeId, {title: title, description: description}, {returnDocument: 'after'});    //using 'findByIdAndUpdate' would be easier if we did not need to check authorization
+    // } catch (err) {                                                                                                             //'returnDocument: after' option is needed so updated place can be returned in the response
+    //     return next(new HttpError('Something went wrong.  Could not update place.', 500));
     // }
 
-    // place.title = title;
-    // place.description = description;
+    let place;
+    try {
+        place = await Place.findById(placeId);
+    } catch (err) {
+        const error = new HttpError('Something went wrong.  Could not update place.', 500);
+        return next(error);
+    }
 
-    // try {
-    //     await place.save();
-    // } catch(err) {
-    //     const error = new HttpError('Something went wrong.  Could not update place.', 500);
-    //     return next(error);
-    // }
+    if (place.creator.toString() !== req.userData.userId) {                             //we are comparing the creator id found on the database to the user id found in the token
+        return next(new HttpError ('You are not allowed to edit this place.', 401));    //401 is an authorization error
+    }
+
+    place.title = title;
+    place.description = description;
+
+    try {
+        await place.save();
+    } catch(err) {
+        const error = new HttpError('Something went wrong.  Could not update place.', 500);
+        return next(error);
+    }
 
     res.status(200).json({place: place.toObject({getter: true})});
 };
@@ -160,6 +165,12 @@ async function deletePlace(req, res, next) {
         return next(new HttpError('Could not find a place for the provided id.', 404)); 
     }
     
+    if (place.creator.id !== req.userData.userId) {                                       //we are comparing the creator id found on the database to the user id found in the token
+        return next(new HttpError ('You are not allowed to delete this place.', 401));    //401 is an authorization error
+    }
+
+    const imagePath = place.image;
+
     try {
         const sess = await mongoose.startSession();
         sess.startTransaction();
@@ -171,6 +182,10 @@ async function deletePlace(req, res, next) {
         console.log(err);
         return next(new HttpError('Something went wrong with session.  Could not delete place.', 500));
     }
+
+    fs.unlink(imagePath, err => {
+        console.log(err);
+    });
 
     res.status(200).json({message: 'Place deleted', place: place.toObject({getter: true})});
 };
@@ -187,3 +202,9 @@ exports.deletePlace = deletePlace;
 //installed:
     //npm install --save uuid
         //-creates unique id's, (for createPlace function)
+
+
+//error codes:
+
+    //401   -   unauthorized;  you may be authenticated, but not allowed
+    //403   -   forbidden in general; not authenticated

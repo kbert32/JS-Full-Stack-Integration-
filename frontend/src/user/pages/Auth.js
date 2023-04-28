@@ -5,6 +5,7 @@ import Button from '../../shared/components/FormElements/Button';
 import Input from '../../shared/components/FormElements/Input';
 import ErrorModal from '../../shared/components/UIElements/ErrorModal';
 import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
+import ImageUpload from '../../shared/components/FormElements/ImageUpload';
 
 import { VALIDATOR_EMAIL, VALIDATOR_MINLENGTH, VALIDATOR_REQUIRE } from '../../shared/util/validators';
 import { useForm } from "../../shared/hooks/form-hook";
@@ -36,7 +37,8 @@ export default function Auth() {
         if (!isLoginMode) {
             setFormData({
                 ...formState.inputs,
-                name: undefined
+                name: undefined, 
+                image: undefined
             }, 
             formState.inputs.email.isValid && formState.inputs.password.isValid);
         } else {
@@ -44,6 +46,10 @@ export default function Auth() {
                 ...formState.inputs,
                 name: {
                     value: '',
+                    isValid: false
+                },
+                image: {
+                    value: null,
                     isValid: false
                 }
             }, false);
@@ -64,19 +70,27 @@ export default function Auth() {
                     JSON.stringify({email: formState.inputs.email.value, password: formState.inputs.password.value}),
                     {'Content-Type': 'application/json'});
                                 
-                authCtx.login(responseData.user.id);
+                authCtx.login(responseData.userId, responseData.token);
             } catch(err) {}   
         } else {
             try {
+                const formData = new FormData();                                //FormData is an API built into the browser which allows us to send 
+                formData.append('email', formState.inputs.email.value);         //binary data
+                formData.append('name', formState.inputs.name.value);
+                formData.append('password', formState.inputs.password.value);
+                formData.append('image', formState.inputs.image.value);
+
                 const responseData = await sendRequest(
                     'http://localhost:5000/api/users/signup', 
                     'POST', 
-                    JSON.stringify({name: formState.inputs.name.value, email: formState.inputs.email.value, password: formState.inputs.password.value}),
-                    {'Content-Type': 'application/json'});
-                                
-                authCtx.login(responseData.user.id);
-            } catch(err) {}
-        }
+                    formData                                                    //with FormData, the fetch API automatically sets up our headers
+                );
+
+                authCtx.login(responseData.userId, responseData.token);
+            } catch (err) {
+                console.log(err);
+            }
+        }       
     };
 
     return (
@@ -94,10 +108,11 @@ export default function Auth() {
                         type='text'
                         label='Your name'
                         validators={[VALIDATOR_REQUIRE()]}
-                        errorText={inputHandler}
+                        errorText='Please enter a name.'
                         onInput={inputHandler}
                         />
                         )}
+                    {!isLoginMode && <ImageUpload center id='image' onInput={inputHandler} errorText='Please provide an image.' />}
                     <Input
                         id='email'
                         element='input'
