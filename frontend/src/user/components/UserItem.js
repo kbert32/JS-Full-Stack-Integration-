@@ -14,7 +14,7 @@ export default function UserItem(props) {
     if (props.id === authCtx.userId) {
         highlight = true;
     }
-    console.log(authCtx.userId);
+    
     return (
         <li className='user-item'>
             <Card className={`user-item__content ${highlight && 'loggedIn'}`}>

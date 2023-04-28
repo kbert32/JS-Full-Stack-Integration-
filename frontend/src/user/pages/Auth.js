@@ -87,9 +87,7 @@ export default function Auth() {
                 );
 
                 authCtx.login(responseData.userId, responseData.token);
-            } catch (err) {
-                console.log(err);
-            }
+            } catch (err) {}
         }       
     };
 
