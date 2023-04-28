@@ -55,7 +55,7 @@ async function createPlace(req, res, next) {
         return next(new HttpError('Invalid inputs, please check your data.', 422));    //next must be used; throw does not work properly with async functions
     }
     
-    const {title, description, address, creator} = req.body;
+    const {title, description, address} = req.body;
 
     let coordinates;
     try {                                                       //to handle possible errors thrown from 'geCoordsForAddress' function, we need to use 'try'
@@ -70,12 +70,12 @@ async function createPlace(req, res, next) {
         address: address,
         location: coordinates,
         image: req.file.path,
-        creator: creator
+        creator: req.userData.userId
     });
 
     let user;
     try {
-        user = await User.findById(creator);
+        user = await User.findById(req.userData.userId);
     } catch (err) {
         return next(new HttpError('Creating place failed Please try again.', 500));
     }
