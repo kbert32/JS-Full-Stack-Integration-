@@ -45,13 +45,13 @@ export default function NewPlace() {
         event.preventDefault();
 
         try {
-            const formData = new FormData();
-            formData.append('title', formState.inputs.title.value);
+            const formData = new FormData();                                        //'FormData' is an API built into the browser that allows us to send
+            formData.append('title', formState.inputs.title.value);                 //binary data
             formData.append('description', formState.inputs.description.value);
             formData.append('address', formState.inputs.address.value);
             formData.append('image', formState.inputs.image.value);
 
-            await sendRequest('http://localhost:5000/api/places', 'POST', formData, {
+            await sendRequest('http://localhost:5000/api/places', 'POST', formData, {   //with 'FormData', the fetch API automatically sets up our headers
                 Authorization: 'Bearer ' + authCtx.token
             });
             
