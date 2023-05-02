@@ -11,7 +11,7 @@ export function useHttpClient() {
     const activeHttpRequests = useRef([]);      //this array is setup with 'useRef' to persist beyone re-renders; this will contain an array of AbortControllers
                                                 //we use useRef instead of useState because we don't want the component to re-render with updates to the array
     const sendRequest = useCallback(async (url, method = 'GET', body = null, headers = {}) => {
-        
+        console.log(url);
         setIsLoading(true);
         const httpAbortCtrl = new AbortController();    //creates a new AbortController;  abort controllers allow us to abort a request should the current componenet,
                                                         //which calls this custom hook, unmount before we receive a response

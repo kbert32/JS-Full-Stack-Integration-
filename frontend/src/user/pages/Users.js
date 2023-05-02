@@ -13,7 +13,6 @@ export default function Users() {
     useEffect(() => {
         async function fetchUsers() {
             try {
-                console.log(process.env.REACT_APP_BACKEND_URL);
                 const responseData = await sendRequest(process.env.REACT_APP_BACKEND_URL + '/api/users');
                 setLoadedUsers(responseData.users);
             } catch (err) {}
