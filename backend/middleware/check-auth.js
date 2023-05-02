@@ -10,12 +10,12 @@ module.exports = (req, res, next) => {
     try {
         const token = req.headers.authorization.split(' ')[1];                  //Authorization: 'Bearer token';  we need to split this into an array and take the second value
         if (!token) {
-            throw new Error('Authentication faile!');
+            throw new Error('Authentication failed!');
         }
         const decodedToken = jwt.verify(token, process.env.JWT_KEY);    //'verify' returns the payload that was initially used to create the token
         req.userData = {userId: decodedToken.userId};                           //we can then add this data to our request object
         next();                                                                 //'next' allows the request to continue 
     } catch (err) {
-        return next(new HttpError('Authentication failed!'), 401);              //if 'verify' fails, we return this error
+        return next(new HttpError('Authentication failed!'), 403);              //if 'verify' fails, we return this error
     }
 };
