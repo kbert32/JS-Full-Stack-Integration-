@@ -9,11 +9,11 @@ const placesRoutes = require('./routes/places-routes');
 const usersRoutes = require('./routes/users-routes');
 const HttpError = require('./models/http-error');
 
-const user = 'kbert32';
-const password = 'ledzep';
-const db = 'MERN';
+const user = '***';
+const password = '***';
+const db = '***';
 
-const url = `mongodb+srv://${user}:${password}@cluster0.ow2ya0v.mongodb.net/${db}?retryWrites=true&w=majority`
+const url = `mongodb+srv://${user}:${password}@***.mongodb.net/${db}?retryWrites=true&w=majority`
 
 const app = express();
 
