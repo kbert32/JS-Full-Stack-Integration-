@@ -34,8 +34,10 @@ export function useAuth() {
     }, [token, logout, tokenExpirationTimer]);
         
     useEffect(() => {
-        // const storedData = JSON.parse(localStorage.getItem('userData'));
-        const storedData = localStorage.getItem('userData');
+        let storedData = localStorage.getItem('userData');
+        if (storedData) {
+            storedData = JSON.parse(storedData);
+        }
         console.log(storedData);
         if (storedData && storedData.token && new Date(storedData.expiration) > new Date()) {
             login(storedData.userId, storedData.token, new Date(storedData.expiration));
