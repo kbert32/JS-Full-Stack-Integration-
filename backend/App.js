@@ -10,7 +10,7 @@ const user = '***';
 const password = '***';
 const db = '***';
 
-const url = `mongodb+srv://${user}:${password}@cluster0.ow2ya0v.mongodb.net/${db}?retryWrites=true&w=majority`
+const url = `mongodb+srv://${user}:${password}@***.mongodb.net/${db}?retryWrites=true&w=majority`
 
 const app = express();
 
