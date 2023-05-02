@@ -14,7 +14,6 @@ export default function Users() {
         async function fetchUsers() {
             try {
                 const responseData = await sendRequest(process.env.REACT_APP_BACKEND_URL + '/api/users');
-                
                 setLoadedUsers(responseData.users);
             } catch (err) {}
         };
