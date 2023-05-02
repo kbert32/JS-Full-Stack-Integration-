@@ -10,4 +10,4 @@ configure mongo
 npm run build   -   to create production build
 
 (frontend)  -   .env.production has updated production google api key added
-(backend)   -   nodemon.json still has development db_name and google api key 
+(backend)   -   nodemon.json still has development db_name and google api key - these will be updated when setting up the app on the hosting service
